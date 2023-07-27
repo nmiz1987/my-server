@@ -4,8 +4,9 @@
     "description": "my own server",
     "main": "index.js",
     "scripts": {
+        "start": "node index.js",
         "server": "nodemon index.js",
-        "start": "node index.js"
+        "vercel-build": "echo hello"
     },
     "author": "Netanel Mizrahi",
     "dependencies": {
