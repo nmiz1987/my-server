@@ -131,10 +131,10 @@ const categoriesRouter = require("./routes/categories");
 app.use("/my-links/categories", categoriesRouter);
 
 const linksRouter = require("./routes/links");
-app.use("/my-links/", linksRouter);
+app.use("/my-links", linksRouter);
 
 const radioRouter = require("./routes/onlineRadio");
-app.use("/online-radio/", radioRouter);
+app.use("/online-radio", radioRouter);
 
 app.listen(port, () => {
     console.log(`Server Started at port ${port}`);
