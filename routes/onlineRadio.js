@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get all lists with pagination
-router.get("/page/", async (req, res) => {
+router.post("/page/", async (req, res) => {
     try {
         const start = req.body.start | 0;
         const size = req.body.size || 20;
