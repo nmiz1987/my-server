@@ -106,7 +106,7 @@ async function updateCategories() {
 async function getLink(req, res, next) {
     let link;
     try {
-        link = await stationsModel.findById(req.params.id);
+        link = await linkModel.findById(req.params.id);
         if (link == null) {
             return res.status(404).json({ message: `Cannot find link id ${req.params.id}` });
         }
