@@ -42,6 +42,10 @@ const onlineRadioSchema = new mongoose.Schema({
         required: true,
         default: "manual",
     },
+    votes: {
+        type: Number,
+        required: false,
+    },
 });
 
 module.exports = mongoose.model("onlineRadio", onlineRadioSchema);

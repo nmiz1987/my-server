@@ -7,7 +7,15 @@ const logAction = require("../logAction");
 // Get all lists
 router.get("/", async (req, res) => {
     try {
-        const allStations = await stationsModel.find();
+        const searchParams = {
+            name: { $regex: new RegExp("^" + (req.query?.name || ""), "i") },
+            tags: { $regex: new RegExp("^" + (req.query?.tags || ""), "i") },
+            country: { $regex: new RegExp("^" + (req.query?.country || ""), "i") },
+            countrycode: { $regex: new RegExp("^" + (req.query?.countrycode || ""), "i") },
+            language: { $regex: new RegExp("^" + (req.query?.language || ""), "i") },
+            languagecodes: { $regex: new RegExp("^" + (req.query?.languagecodes || ""), "i") },
+        };
+        const allStations = await stationsModel.find(searchParams).limit(9999999).sort({ votes: -1 });
         res.json(allStations);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -15,53 +23,21 @@ router.get("/", async (req, res) => {
 });
 
 // Get all lists with pagination
-router.post("/page/", async (req, res) => {
+router.get("/page/", async (req, res) => {
     try {
+        const searchParams = {
+            name: { $regex: new RegExp("^" + (req.query?.name || ""), "i") },
+            tags: { $regex: new RegExp("^" + (req.query?.tags || ""), "i") },
+            country: { $regex: new RegExp("^" + (req.query?.country || ""), "i") },
+            countrycode: { $regex: new RegExp("^" + (req.query?.countrycode || ""), "i") },
+            language: { $regex: new RegExp("^" + (req.query?.language || ""), "i") },
+            languagecodes: { $regex: new RegExp("^" + (req.query?.languagecodes || ""), "i") },
+        };
         const start = req.body.start | 0;
         const size = req.body.size || 20;
-        const allData = await stationsModel.find();
+        const allData = await stationsModel.find(searchParams).limit(9999999).sort({ votes: -1 });
         chunk = allData.slice(start, start + size);
         res.json(chunk);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-// Get all stations by country
-router.get("/bycountrycode/:countrycode", async (req, res) => {
-    try {
-        const allStations = await stationsModel.find({ countrycode: req.params.countrycode.toUpperCase() });
-        res.json(allStations);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-// Get all stations by language
-router.get("/bylanguage/:language", async (req, res) => {
-    try {
-        const allStations = await stationsModel.find({ language: req.params.language });
-        res.json(allStations);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-// Get all stations by tag
-router.get("/bytag/:tag", async (req, res) => {
-    try {
-        const allStations = await stationsModel.find({ tags: req.params.tag });
-        res.json(allStations);
-    } catch (err) {
-        res.status(500).json({ message: err.message });
-    }
-});
-
-//get all stations by name
-router.get("/byname/:name", async (req, res) => {
-    try {
-        const allStations = await stationsModel.where("name", { $regex: req.params.name });
-        res.json(allStations);
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -180,6 +156,7 @@ router.post("/updateDB", auth, async (req, res) => {
         const apiRes = await fetch(
             "https://de1.api.radio-browser.info/json/stations/search?hidebroken=true&order=clickcount&reverse=true"
         );
+        let counter = 0;
         const data = await apiRes.json();
         if (data.length == 0) throw new Error("No data received from radio-browser.info, update failed.");
         console.log("deleting all radio-browser.info DB...");
@@ -187,8 +164,8 @@ router.post("/updateDB", auth, async (req, res) => {
         console.log("All the radio-browser.info DB deleted! Updating.");
         data.forEach(async (item) => {
             let station = new stationsModel({
-                stationuuid: item.stationuuid,
                 name: item.name,
+                stationuuid: item.stationuuid,
                 url_resolved: item.url_resolved,
                 favicon: item.favicon,
                 tags: item.tags,
@@ -196,9 +173,13 @@ router.post("/updateDB", auth, async (req, res) => {
                 countrycode: item.countrycode,
                 language: item.language,
                 languagecodes: item.languagecodes,
+                votes: item.votes,
                 source: "https://www.radio-browser.info/",
             });
             await station.save();
+
+            counter++;
+            console.log(counter, data.length, data.length - counter);
         });
         logAction(req.body.email, `Admin updated the DB with ${data.length} stations`);
         res.status(201).json({ message: `DB updated with ${data.length} stations` });
@@ -207,7 +188,7 @@ router.post("/updateDB", auth, async (req, res) => {
     }
 });
 
-//create new item
+//delete item
 router.delete("/:id", auth, getStation, async (req, res) => {
     try {
         if (req.body.email === undefined) {
