@@ -14,8 +14,9 @@ router.get("/", async (req, res) => {
             countrycode: { $regex: new RegExp("^" + (req.query?.countrycode || ""), "i") },
             language: { $regex: new RegExp("^" + (req.query?.language || ""), "i") },
             languagecodes: { $regex: new RegExp("^" + (req.query?.languagecodes || ""), "i") },
+            limit: req.query?.limit || 100,
         };
-        const allStations = await stationsModel.find(searchParams).limit(9999999).sort({ votes: -1 });
+        const allStations = await stationsModel.find(searchParams).limit(searchParams.limit).sort({ votes: -1 });
         res.json(allStations);
     } catch (err) {
         res.status(500).json({ message: err.message });
