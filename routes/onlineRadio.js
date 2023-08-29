@@ -114,7 +114,7 @@ router.get("/generateProps", async (req, res) => {
     }
 });
 
-router.put("/:id", auth, getStation, async (req, res) => {
+router.put("/update-station/:id", auth, getStation, async (req, res) => {
     try {
         const item = res.station;
         if (req.body.name != null) {
@@ -193,7 +193,7 @@ router.post("/updateDB", auth, async (req, res) => {
 });
 
 //delete item
-router.delete("/:id", auth, getStation, async (req, res) => {
+router.delete("/delete/:id", auth, getStation, async (req, res) => {
     try {
         if (req.body.email === undefined) {
             return res.status(400).json({ message: `Admin email is required` });
