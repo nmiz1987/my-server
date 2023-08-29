@@ -118,7 +118,7 @@ app.delete("/logout", async (req, res) => {
 
 app.get("/", async (req, res) => {
     try {
-        res.json({ message: "Welcome to My Links API" });
+        res.json({ message: "Welcome to My Links API 😀" });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
