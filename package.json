@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "vercel-build": "echo hello"
+    "vercel-build": "echo hello",
+    "build": "vercel --prod"
   },
   "author": "Netanel Mizrahi",
   "dependencies": {
