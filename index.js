@@ -136,6 +136,9 @@ app.use("/useful-links", linksRouter);
 const radioRouter = require("./routes/onlineRadio");
 app.use("/online-radio", radioRouter);
 
+const fakerRouter = require("./routes/faker");
+app.use("/faker", fakerRouter);
+
 app.listen(port, () => {
   console.log(`Server Started at port ${port}`);
 });
