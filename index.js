@@ -39,20 +39,20 @@ app.post("/signup", async (req, res) => {
     if (req.body.password.length < 8) {
       return res.status(400).json({ message: `Password must be at least 8 characters` });
     }
-    const user = await usersModel.findOne({ email: req.body.email });
+    const user = await usersModel.findOne({ email: req.body.email.toLowerCase() });
     if (user) {
-      return res.status(400).json({ message: `Email ${req.body.email} is already been used` });
+      return res.status(400).json({ message: `Email ${req.body.email.toLowerCase()} is already been used` });
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    const accessToken = generateAccessToken({ email: req.body.email });
+    const accessToken = generateAccessToken({ email: req.body.email.toLowerCase() });
     const newUser = new usersModel({
-      email: req.body.email,
+      email: req.body.email.toLowerCase(),
       password: hashedPassword,
       accessToken: accessToken,
       tokenCreation: new Date(),
     });
     await newUser.save();
-    logAction(req.body.email, "User created");
+    logAction(req.body.email.toLowerCase(), "User created");
     res.status(201).json({ message: "User created", token: accessToken });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -70,16 +70,16 @@ app.post("/login", async (req, res) => {
     if (req.body.password.length < 8) {
       return res.status(400).json({ message: `Password must be at least 8 characters` });
     }
-    const user = await usersModel.findOne({ email: req.body.email });
+    const user = await usersModel.findOne({ email: req.body.email.toLowerCase() });
     if (user == null) {
       return res.status(400).json({ message: "User not found" });
     }
     if (await bcrypt.compare(req.body.password, user.password)) {
-      const accessToken = generateAccessToken({ email: req.body.email });
+      const accessToken = generateAccessToken({ email: req.body.email.toLowerCase() });
       user.accessToken = accessToken;
       user.tokenCreation = new Date();
       await user.save();
-      logAction(req.body.email, "User logged in");
+      logAction(req.body.email.toLowerCase(), "User logged in");
       res.json({ accessToken: accessToken });
     } else {
       res.status(400).json({ message: "Wrong password" });
@@ -97,7 +97,7 @@ app.delete("/logout", async (req, res) => {
     if (req.body.password === undefined) {
       return res.status(400).json({ message: `Password is required` });
     }
-    const user = await usersModel.findOne({ email: req.body.email });
+    const user = await usersModel.findOne({ email: req.body.email.toLowerCase() });
     if (user == null) {
       return res.status(400).json({ message: "User not found" });
     }
@@ -105,7 +105,7 @@ app.delete("/logout", async (req, res) => {
       user.accessToken = undefined;
       user.tokenCreation = undefined;
       await user.save();
-      logAction(req.body.email, "User logged out");
+      logAction(req.body.email.toLowerCase(), "User logged out");
 
       res.status(200).json({ message: "User logged out successfully" });
     } else {
