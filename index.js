@@ -27,7 +27,7 @@ db.on("error", (error) => console.log(error));
 db.once("open", () => console.log("Connected to DataBase"));
 
 //create new user
-app.post("/singup", async (req, res) => {
+app.post("/signup", async (req, res) => {
   console.log(req);
   try {
     if (req.body.email === undefined) {
