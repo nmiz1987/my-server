@@ -90,7 +90,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.delete("/logout", auth, async (req, res) => {
+app.post("/logout", auth, async (req, res) => {
   try {
     if (req.body.email === undefined) {
       return res.status(400).json({ message: `Email is required` });
