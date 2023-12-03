@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const usersModel = require("./models/users");
 const app = express();
 const port = process.env.PORT || 5000;
+const auth = require("./authenticateToken");
 
 const generateAccessToken = require("./generateAccessToken.js");
 const logAction = require("./logAction.js");
@@ -89,28 +90,26 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.delete("/logout", async (req, res) => {
+app.delete("/logout", auth, async (req, res) => {
   try {
     if (req.body.email === undefined) {
       return res.status(400).json({ message: `Email is required` });
     }
-    if (req.body.password === undefined) {
-      return res.status(400).json({ message: `Password is required` });
+    if (req.body.token === undefined) {
+      return res.status(400).json({ message: `Token is required` });
     }
     const user = await usersModel.findOne({ email: req.body.email.toLowerCase() });
     if (user == null) {
       return res.status(400).json({ message: "User not found" });
     }
-    if (await bcrypt.compare(req.body.password, user.password)) {
-      user.accessToken = undefined;
-      user.tokenCreation = undefined;
-      await user.save();
-      logAction(req.body.email.toLowerCase(), "User logged out");
-
-      res.status(200).json({ message: "User logged out successfully" });
-    } else {
-      res.status(400).json({ message: "Wrong password" });
+    if (res.email !== req.body.email) {
+      return res.status(400).json({ message: `You are not who I thought you are.` });
     }
+    user.accessToken = undefined;
+    user.tokenCreation = undefined;
+    await user.save();
+    logAction(req.body.email.toLowerCase(), "User logged out");
+    res.status(200).json({ message: "User logged out successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
