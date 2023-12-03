@@ -95,9 +95,6 @@ app.post("/logout", auth, async (req, res) => {
     if (req.body.email === undefined) {
       return res.status(400).json({ message: `Email is required` });
     }
-    if (req.body.token === undefined) {
-      return res.status(400).json({ message: `Token is required` });
-    }
     const user = await usersModel.findOne({ email: req.body.email.toLowerCase() });
     if (user == null) {
       return res.status(400).json({ message: "User not found" });
