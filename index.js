@@ -89,23 +89,6 @@ app.post("/login", async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
-app.get("/mygenes", async (req, res) => {
-  try {
-  let body = {
-    username: "789789789",
-    password: "aA123456",
-    ValidationCode: "0",
-  }
-  console.log("====== start ======");
-    let res = await fetch("https://api.mygenes.co.il/api", {method: 'POST', body: JSON.stringify(body)});
-    console.log(res);
-    console.log("====== end ======");
-    res.json({ message: res });
-  } catch (err) {
-
-    res.status(500).json({ message: err.message });
-  }
-});
 
 app.post("/logout", auth, async (req, res) => {
   try {
