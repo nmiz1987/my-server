@@ -151,7 +151,7 @@ router.post("/updateDB", auth, async (req, res) => {
     if (req.body.email === undefined) {
       return res.status(400).json({ message: `Admin email is required` });
     }
-    if (res.email !== process.env.ADMIN_EMAIL || res.email !== req.body.email) {
+    if (req.email !== process.env.ADMIN_EMAIL || req.email !== req.body.email) {
       return res.status(400).json({ message: `You are not authorized to update the DB.` });
     }
     const apiRes = await fetch("https://de1.api.radio-browser.info/json/stations/search?hidebroken=true&order=clickcount&reverse=true");
@@ -193,7 +193,7 @@ router.delete("/delete/:id", auth, getStation, async (req, res) => {
     if (req.body.email === undefined) {
       return res.status(400).json({ message: `Admin email is required` });
     }
-    if (res.email !== process.env.ADMIN_EMAIL || res.email !== req.body.email) {
+    if (req.email !== process.env.ADMIN_EMAIL || req.email !== req.body.email) {
       return res.status(400).json({ message: `You are not authorized to delete the station.` });
     }
     const item = res.message;
@@ -211,7 +211,7 @@ router.delete("/superDeletion", auth, async (req, res) => {
     if (req.body.email === undefined) {
       return res.status(400).json({ message: `Admin email is required` });
     }
-    if (res.email !== process.env.ADMIN_EMAIL || res.email !== req.body.email) {
+    if (req.email !== process.env.ADMIN_EMAIL || req.email !== req.body.email) {
       return res.status(400).json({ message: `You are not authorized to delete the DB.` });
     }
     console.log("deleting all DB...");

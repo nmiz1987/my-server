@@ -8,8 +8,10 @@ const usersModel = require("./models/users");
 const app = express();
 const port = process.env.PORT || 5000;
 const auth = require("./authenticateToken");
+const jwt = require("jsonwebtoken");
 
-const generateAccessToken = require("./generateAccessToken.js");
+const { generateAccessToken, generateRefreshToken } = require("./generateAccessToken.js");
+
 const logAction = require("./logAction.js");
 
 app.use(cors());
@@ -26,6 +28,33 @@ const db = mongoose.connection;
 
 db.on("error", (error) => console.log(error));
 db.once("open", () => console.log("Connected to DataBase"));
+
+app.post("/token", async (req, res) => {
+  try {
+    if (req.body.refreshToken === undefined) {
+      return res.status(400).json({ message: `Refresh token is required` });
+    }
+    const user = await usersModel.findOne({ refreshToken: req.body.refreshToken });
+    if (user === null) {
+      return res.status(400).json({ message: "User not found" });
+    }
+
+    jwt.verify(req.body.refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, _) => {
+      if (err) {
+        return res.status(403).json({ message: "Invalid refresh token" });
+      } else {
+        const accessToken = generateAccessToken({ email: user.email.toLowerCase() });
+        user.accessToken = accessToken;
+        user.tokenCreation = new Date();
+        await user.save();
+        logAction(user.email.toLowerCase(), "Token refreshed");
+        res.status(200).json({ message: "generate new token", accessToken: accessToken });
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 //create new user
 app.post("/signup", async (req, res) => {
@@ -46,15 +75,18 @@ app.post("/signup", async (req, res) => {
     }
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
     const accessToken = generateAccessToken({ email: req.body.email.toLowerCase() });
+    const refreshToken = generateRefreshToken({ email: req.body.email.toLowerCase() });
+
     const newUser = new usersModel({
       email: req.body.email.toLowerCase(),
       password: hashedPassword,
       accessToken: accessToken,
+      refreshToken: refreshToken,
       tokenCreation: new Date(),
     });
     await newUser.save();
     logAction(req.body.email.toLowerCase(), "User created");
-    res.status(201).json({ message: "User created", token: accessToken });
+    res.status(201).json({ message: "User created", accessToken: accessToken, refreshToken: refreshToken });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -77,11 +109,13 @@ app.post("/login", async (req, res) => {
     }
     if (await bcrypt.compare(req.body.password, user.password)) {
       const accessToken = generateAccessToken({ email: req.body.email.toLowerCase() });
+      const refreshToken = generateRefreshToken({ email: req.body.email.toLowerCase() });
       user.accessToken = accessToken;
+      user.refreshToken = refreshToken;
       user.tokenCreation = new Date();
       await user.save();
       logAction(req.body.email.toLowerCase(), "User logged in");
-      res.json({ accessToken: accessToken });
+      res.status(200).json({ message: "success login", accessToken: accessToken, refreshToken: refreshToken });
     } else {
       res.status(400).json({ message: "Wrong password" });
     }
@@ -99,14 +133,15 @@ app.post("/logout", auth, async (req, res) => {
     if (user == null) {
       return res.status(400).json({ message: "User not found" });
     }
-    if (res.email !== req.body.email) {
+    if (req.email !== req.body.email) {
       return res.status(400).json({ message: `You are not who I thought you are.` });
     }
     user.accessToken = undefined;
     user.tokenCreation = undefined;
+    user.refreshToken = undefined;
     await user.save();
     logAction(req.body.email.toLowerCase(), "User logged out");
-    res.status(200).json({ message: "User logged out successfully" });
+    res.status(204).json({ message: "User logged out successfully" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
