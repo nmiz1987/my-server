@@ -29,7 +29,19 @@ const db = mongoose.connection;
 db.on("error", (error) => console.log(error));
 db.once("open", () => console.log("Connected to DataBase"));
 
-app.post("/token", async (req, res) => {
+app.get("/login-with-token", auth, async (req, res) => {
+  try {
+    const user = await usersModel.findOne({ email: req.email });
+    if (user === null) {
+      return res.status(400).json({ message: "User not found" });
+    }
+    res.status(200).json({ message: "success login", accessToken: user.accessToken, refreshToken: user.refreshToken });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+app.post("/refresh-token", async (req, res) => {
   try {
     if (req.body.refreshToken === undefined) {
       return res.status(400).json({ message: `Refresh token is required` });
