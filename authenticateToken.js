@@ -8,7 +8,7 @@ function authenticateToken(req, res, next) {
     if (token === undefined) {
       return res.status(401).json({ message: "Token is required" });
     }
-    jwt.verify(token, `${process.env.ACCESS_TOKEN_SECRET}`, async (err, user) => {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, user) => {
       if (err) {
         console.log(err);
         return res.status(401).json({ message: "Token expired" });
