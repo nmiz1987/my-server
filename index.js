@@ -106,6 +106,7 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
+    console.log("!!!");
     if (req.body.email === undefined) {
       return res.status(400).json({ message: `Email is required` });
     }
