@@ -35,7 +35,7 @@ app.get("/login-with-token", auth, async (req, res) => {
     if (user === null) {
       return res.status(400).json({ message: "User not found" });
     }
-    res.status(200).json({ message: "success login", accessToken: user.accessToken, refreshToken: user.refreshToken });
+    res.status(200).json({ message: "success login", accessToken: user.accessToken, refreshToken: user.refreshToken, email: user.email });
   } catch (err) {
     res.status(403).json({ message: err.message });
   }
