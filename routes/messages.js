@@ -10,7 +10,7 @@ router.get("/", auth, async (req, res) => {
     if (req.body.email === undefined) {
       return res.status(400).json({ message: `Admin email is required` });
     }
-    if (req.email !== process.env.ADMIN_EMAIL || req.email !== req.body.email) {
+    if (req.email !== `${process.env.ADMIN_EMAIL}` || req.email !== req.body.email) {
       return res.status(400).json({ message: `You are not authorized to see the messages.` });
     }
     const allMessages = await messagesModel.find();
@@ -27,7 +27,7 @@ router.get("/:id", auth, getMessage, (req, res) => {
     if (req.body.email === undefined) {
       return res.status(400).json({ message: `Admin email is required` });
     }
-    if (req.email !== process.env.ADMIN_EMAIL || req.email !== req.body.email) {
+    if (req.email !== `${process.env.ADMIN_EMAIL}` || req.email !== req.body.email) {
       return res.status(400).json({ message: `You are not authorized to see the message.` });
     }
     logAction(req.body.email, `Admin viewed message id ${res.message._id}`);
@@ -60,7 +60,7 @@ router.delete("/:id", auth, getMessage, async (req, res) => {
     if (req.body.email === undefined) {
       return res.status(400).json({ message: `Admin email is required` });
     }
-    if (req.email !== process.env.ADMIN_EMAIL || req.email !== req.body.email) {
+    if (req.email !== `${process.env.ADMIN_EMAIL}` || req.email !== req.body.email) {
       return res.status(400).json({ message: `You are not authorized to delete the message.` });
     }
     const item = res.message;

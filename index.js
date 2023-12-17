@@ -6,7 +6,7 @@ const { ServerApiVersion } = require("mongodb");
 const bcrypt = require("bcrypt");
 const usersModel = require("./models/users");
 const app = express();
-const port = process.env.PORT || 5000;
+const port = `${process.env.PORT}` || 5000;
 const auth = require("./authenticateToken");
 const jwt = require("jsonwebtoken");
 
@@ -18,7 +18,7 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-mongoose.connect(process.env.DATABASE_URL, {
+mongoose.connect(`${process.env.DATABASE_URL}`, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
@@ -51,7 +51,7 @@ app.post("/refresh-token", async (req, res) => {
       return res.status(400).json({ message: "User not found" });
     }
 
-    jwt.verify(req.body.refreshToken, process.env.REFRESH_TOKEN_SECRET, async (err, _) => {
+    jwt.verify(req.body.refreshToken, `${process.env.REFRESH_TOKEN_SECRET}`, async (err, _) => {
       if (err) {
         return res.status(403).json({ message: "Invalid refresh token" });
       } else {
