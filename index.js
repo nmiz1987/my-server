@@ -6,7 +6,7 @@ const { ServerApiVersion } = require("mongodb");
 const bcrypt = require("bcrypt");
 const usersModel = require("./models/users");
 const app = express();
-const port = `${process.env.PORT}` || 5000;
+const port = process.env.PORT || 5000;
 const auth = require("./authenticateToken");
 const jwt = require("jsonwebtoken");
 
