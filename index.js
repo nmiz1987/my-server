@@ -43,15 +43,17 @@ app.get("/login-with-token", auth, async (req, res) => {
 
 app.get("/refresh-token", async (req, res) => {
   try {
-    if (req.body.refreshToken === undefined) {
+    const authHeader = req.headers["authorization"];
+    const refreshTkn = authHeader && authHeader.split(" ")[1];
+    if (refreshTkn === undefined) {
       return res.status(400).json({ message: `Refresh token is required` });
     }
-    const user = await usersModel.findOne({ refreshToken: req.body.refreshToken });
+    const user = await usersModel.findOne({ refreshToken: refreshTkn });
     if (user === null) {
       return res.status(400).json({ message: "User not found" });
     }
 
-    jwt.verify(req.body.refreshToken, `${process.env.REFRESH_TOKEN_SECRET}`, async (err, _) => {
+    jwt.verify(refreshTkn, `${process.env.REFRESH_TOKEN_SECRET}`, async (err, _) => {
       if (err) {
         return res.status(403).json({ message: "Invalid refresh token" });
       } else {
