@@ -41,7 +41,7 @@ app.get("/login-with-token", auth, async (req, res) => {
   }
 });
 
-app.post("/refresh-token", async (req, res) => {
+app.get("/refresh-token", async (req, res) => {
   try {
     if (req.body.refreshToken === undefined) {
       return res.status(400).json({ message: `Refresh token is required` });
