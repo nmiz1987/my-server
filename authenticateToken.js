@@ -11,7 +11,7 @@ function authenticateToken(req, res, next) {
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, async (err, user) => {
       if (err) {
         console.log(err);
-        return res.status(401).json({ message: "Token expired" });
+        return res.status(401).json({ message: `Token expired at ${err.expiredAt}}` });
       } else {
         const user = await usersModel.findOne({ accessToken: token });
         if (user === null) {
