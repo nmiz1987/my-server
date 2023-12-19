@@ -35,7 +35,9 @@ app.get("/login-with-token", auth, async (req, res) => {
     if (user === null) {
       return res.status(400).json({ message: "User not found" });
     }
-    res.status(200).json({ message: "success login", accessToken: user.accessToken, refreshToken: user.refreshToken, email: user.email });
+    res
+      .status(200)
+      .json({ message: "success login", accessToken: user.accessToken, refreshToken: user.refreshToken, email: user.email, userRole: user.userRole });
   } catch (err) {
     res.status(403).json({ message: err.message });
   }
@@ -62,7 +64,7 @@ app.get("/refresh-token", async (req, res) => {
         user.tokenCreation = new Date();
         await user.save();
         logAction(user.email.toLowerCase(), "Token refreshed");
-        res.status(200).json({ message: "generate new token", accessToken: accessToken });
+        res.status(200).json({ message: "generate new token", accessToken: accessToken, userRole: user.userRole });
       }
     });
   } catch (err) {
@@ -100,7 +102,7 @@ app.post("/signup", async (req, res) => {
     });
     await newUser.save();
     logAction(req.body.email.toLowerCase(), "User created");
-    res.status(201).json({ message: "User created", accessToken: accessToken, refreshToken: refreshToken });
+    res.status(201).json({ message: "User created", accessToken: accessToken, refreshToken: refreshToken, userRole: user.userRole });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -130,7 +132,7 @@ app.post("/login", async (req, res) => {
       user.tokenCreation = new Date();
       await user.save();
       logAction(req.body.email.toLowerCase(), "User logged in");
-      res.status(200).json({ message: "success login", accessToken: accessToken, refreshToken: refreshToken });
+      res.status(200).json({ message: "success login", accessToken: accessToken, refreshToken: refreshToken, userRole: user.userRole });
     } else {
       res.status(400).json({ message: "Wrong password" });
     }

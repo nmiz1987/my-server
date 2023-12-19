@@ -21,6 +21,10 @@ const usersSchema = new mongoose.Schema({
     type: Date,
     required: false,
   },
+  userRole: {
+    type: Number,
+    default: 1, // 1 - guest, 2 - user, 3 - admin
+  },
 });
 
 module.exports = mongoose.model("users", usersSchema);
