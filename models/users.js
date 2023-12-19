@@ -23,7 +23,7 @@ const usersSchema = new mongoose.Schema({
   },
   userRole: {
     type: Number,
-    default: 1, // 1 - guest, 2 - user, 3 - admin
+    default: 2, // 1 - guest, 2 - user, 3 - admin
   },
 });
 
