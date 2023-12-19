@@ -102,7 +102,7 @@ app.post("/signup", async (req, res) => {
     });
     await newUser.save();
     logAction(req.body.email.toLowerCase(), "User created");
-    res.status(201).json({ message: "User created", accessToken: accessToken, refreshToken: refreshToken, userRole: user.userRole });
+    res.status(201).json({ message: "User created", accessToken: accessToken, refreshToken: refreshToken, userRole: newUser.userRole });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -110,7 +110,6 @@ app.post("/signup", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
-    console.log("!!!");
     if (req.body.email === undefined) {
       return res.status(400).json({ message: `Email is required` });
     }
