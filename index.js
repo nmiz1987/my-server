@@ -121,7 +121,7 @@ app.post("/login", async (req, res) => {
     }
     const user = await usersModel.findOne({ email: req.body.email.toLowerCase() });
     if (user == null) {
-      return res.status(400).json({ message: "User or password is incorrect" });
+      return res.status(400).json({ message: `We couldn't find user with email ${req.body.email}` });
     }
     if (await bcrypt.compare(req.body.password, user.password)) {
       const accessToken = generateAccessToken({ email: req.body.email.toLowerCase() });
@@ -133,7 +133,7 @@ app.post("/login", async (req, res) => {
       logAction(req.body.email.toLowerCase(), "User logged in");
       res.status(200).json({ message: "success login", accessToken: accessToken, refreshToken: refreshToken, userRole: user.userRole });
     } else {
-      res.status(400).json({ message: "Wrong password" });
+      res.status(400).json({ message: "User or password is incorrect" });
     }
   } catch (err) {
     res.status(500).json({ message: err.message });
