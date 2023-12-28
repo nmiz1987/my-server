@@ -39,7 +39,10 @@ router.post("/new-link", auth, async (req, res) => {
       tags: req.body.tags,
       imgSrc: req.body.imgSrc,
     });
+   
     const newItem = await item.save();
+    
+
     logAction(`${req.body.email} add new link`);
     updateCategories(); // update categories DB
     res.status(201).send(newItem);
