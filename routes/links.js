@@ -36,7 +36,7 @@ router.post("/new-link", auth, async (req, res) => {
       description: req.body.description,
       link: req.body.link,
       recommended: req.body.recommended,
-      tags: req.body.tags.split(" "),
+      tags: req.body.tags.split(","),
       imgSrc: req.body.imgSrc,
     });
     const newItem = await item.save();
