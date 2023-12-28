@@ -24,11 +24,11 @@ const linkSchema = new mongoose.Schema(
         },
         tags: {
             type: Array,
-            required: false,
+            required: true,
         },
         imgSrc: {
             type: String,
-            required: false,
+            required: true,
         },
     }
     // { strict: false }

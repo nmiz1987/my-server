@@ -28,7 +28,7 @@ router.get("/:id", getLink, (req, res) => {
 });
 
 //create new link
-router.post("/", auth, async (req, res) => {
+router.post("/new-link", auth, async (req, res) => {
   try {
     const item = new linkModel({
       category: req.body.category,
@@ -40,7 +40,7 @@ router.post("/", auth, async (req, res) => {
       imgSrc: req.body.imgSrc,
     });
     const newItem = await item.save();
-    logAction(req.body.email, "New link added");
+    logAction(`${req.body.email} add new link`);
     updateCategories(); // update categories DB
     res.status(201).send(newItem);
   } catch (err) {
