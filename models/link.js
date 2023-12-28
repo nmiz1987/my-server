@@ -15,7 +15,8 @@ const linkSchema = new mongoose.Schema(
             required: true,
         },
         link: {
-            type: String,
+            //array of string
+            type: Array,
             required: true,
         },
         recommended: {
